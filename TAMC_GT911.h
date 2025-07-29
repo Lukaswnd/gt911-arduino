@@ -117,15 +117,20 @@
 #define GT911_SPLIT_SET                (uint16_t)0X80B4
 #define GT911_SENSOR_CH0               (uint16_t)0X80B7
 #define GT911_DRIVER_CH0               (uint16_t)0X80D5
+
 #define GT911_CONFIG_CHKSUM            (uint16_t)0X80FF
 #define GT911_CONFIG_FRESH             (uint16_t)0X8100
-#define GT911_CONFIG_SIZE              (uint16_t)0xFF-0x46
+#define GT911_CONFIG_SIZE              (uint16_t)0xB7
 // Coordinate information
-#define GT911_PRODUCT_ID        (uint16_t)0X8140
-#define GT911_FIRMWARE_VERSION  (uint16_t)0X8140
-#define GT911_RESOLUTION        (uint16_t)0X8140
-#define GT911_VENDOR_ID         (uint16_t)0X8140
-#define GT911_IMFORMATION       (uint16_t)0X8140
+#define GT911_PRODUCT_ID               (uint16_t)0X8140
+#define GT911_FIRMWARE_VERSION_LOW     (uint16_t)0X8144
+#define GT911_FIRMWARE_VERSION_HIGH    (uint16_t)0X8145
+#define GT911_RESOLUTION_X_LOW         (uint16_t)0X8146
+#define GT911_RESOLUTION_X_HIGH        (uint16_t)0X8147
+#define GT911_RESOLUTION_Y_LOW         (uint16_t)0X8148
+#define GT911_RESOLUTION_Y_HIGH        (uint16_t)0X8149
+#define GT911_VENDOR_ID                (uint16_t)0X814A
+
 #define GT911_POINT_INFO        (uint16_t)0X814E
 #define GT911_POINT_1           (uint16_t)0X814F
 #define GT911_POINT_2           (uint16_t)0X8157
@@ -165,7 +170,8 @@ class TAMC_GT911 {
     TP_Point points[5];
 
   private:
-    void calculateChecksum();
+    uint8_t calculateChecksum();
+    void log_size();
     void reflashConfig();
     // static void ARDUINO_ISR_ATTR onInterrupt();
     TP_Point readPoint(uint8_t *data);
@@ -182,6 +188,8 @@ class TAMC_GT911 {
     uint8_t pinRst;
     uint16_t width;
     uint16_t height;
+    uint16_t native_width;
+    uint16_t native_height;
     uint8_t configBuf[GT911_CONFIG_SIZE];
     // uint8_t *configBuf;
 };
