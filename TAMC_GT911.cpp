@@ -29,7 +29,7 @@ void TAMC_GT911::reset()
     
     readBlockData(configBuf, GT911_CONFIG_START, GT911_CONFIG_SIZE);
     //log_size();
-    setResolution(width, height);
+    //setResolution(width, height);
     //log_size();
 
     native_width =  configBuf[GT911_X_OUTPUT_MAX_LOW - GT911_CONFIG_START] |
@@ -40,6 +40,7 @@ void TAMC_GT911::reset()
 }
 
 void TAMC_GT911::log_size(){
+    printf("Config Version: %d\n", configBuf[GT911_CONFIG_VERSION - GT911_CONFIG_START]);
     readBlockData(configBuf, GT911_CONFIG_START, GT911_CONFIG_SIZE);
     uint16_t w = configBuf[GT911_X_OUTPUT_MAX_LOW - GT911_CONFIG_START] |
                 (configBuf[GT911_X_OUTPUT_MAX_HIGH - GT911_CONFIG_START] << 8);
@@ -73,8 +74,8 @@ void TAMC_GT911::reflashConfig()
     delay(10);
     
     writeBlockData(GT911_CONFIG_START, configBuf, GT911_CONFIG_SIZE);
-    writeByteData(GT911_CONFIG_CHKSUM, checksum);
-    writeByteData(GT911_CONFIG_FRESH, 1);
+    uint8_t check[] = { checksum, 1};
+    writeBlockData(GT911_CONFIG_CHKSUM, check, 2);
 }
 void TAMC_GT911::setRotation(uint8_t rot)
 {
@@ -82,6 +83,8 @@ void TAMC_GT911::setRotation(uint8_t rot)
 }
 void TAMC_GT911::setResolution(uint16_t _width, uint16_t _height)
 {
+    configBuf[GT911_CONFIG_VERSION - GT911_CONFIG_START] += 1;
+
     configBuf[GT911_X_OUTPUT_MAX_LOW - GT911_CONFIG_START] = lowByte(_width);
     configBuf[GT911_X_OUTPUT_MAX_HIGH - GT911_CONFIG_START] = highByte(_width);
     configBuf[GT911_Y_OUTPUT_MAX_LOW - GT911_CONFIG_START] = lowByte(_height);
